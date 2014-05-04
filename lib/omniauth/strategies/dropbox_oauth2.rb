@@ -36,6 +36,13 @@ module OmniAuth
         @raw_info ||= MultiJson.decode(access_token.get('/1/account/info').body)
       end
 
+      def full_host
+        uri = URI.parse(super)
+        # Dropbox API requires https for non-localhost callback url
+        uri.scheme = 'https' unless 'localhost'.eql?(uri.host)
+        uri.to_s
+      end
+
       def callback_url
         if @authorization_code_from_signed_request
           ''
